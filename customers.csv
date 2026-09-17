@@ -1,0 +1,9 @@
+id,name,annual_income,total_debt,credit_limit,credit_used,late_payments
+C001,James Murphy,72000,18000,30000,7500,0
+C002,Sarah O'Brien,48000,22000,18000,14500,3
+C003,Michael Kelly,95000,12000,45000,9000,1
+C004,Emma Walsh,35000,28000,12000,11500,8
+C005,Liam Byrne,110000,15000,60000,12000,0
+C006,Grace Nolan,52000,15000,30000,15000,
+C007,Daniel Ryan,0,5000,10000,9000,2
+C008,Ava Collins,64000,30000,20000,25000,6
