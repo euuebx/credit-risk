@@ -1,85 +1,56 @@
-```markdown
 # Credit Risk Scoring Engine
 
-A command-line tool that reads customer financial data from a CSV file
-and generates credit risk scores and reports.
+A C++ CLI tool that reads customer financial data from a CSV file and scores each customer's credit risk.
 
-## Features
+## How it works
 
-- Reads customer data from CSV (handles quoted fields, whitespace, headers)
-- Computes a risk score from three normalized features:
-  - Debt-to-income (40% weight)
-  - Credit utilization (35% weight)
-  - Late-payment rate (25% weight)
-- Classifies each customer as LOW, MEDIUM, or HIGH risk
-- Writes one text report per customer
-- Optionally writes a JSON summary
-- Prints a console summary
+Each customer is scored using three weighted factors:
 
-## Requirements
+- Debt-to-income ratio (40%)
+- Credit utilization (35%)
+- Late payment rate (25%)
 
-- A C++ compiler (g++, clang++, or MSVC)
+The weighted score is passed through a saturating exponential transform to produce a risk score between 0 and 1, then classified as:
+
+- **LOW** (< 0.33)
+- **MEDIUM** (0.33–0.66)
+- **HIGH** (> 0.66)
 
 ## Build
 
 ```bash
-g++ -std=c++17 -Wall -Wextra -pedantic -O2 \
-    src/Customer.cpp src/Scorer.cpp src/CSVReader.cpp src/main.cpp \
-    -o credit_risk.exe
+make
 ```
 
 ## Run
 
 ```bash
-./credit_risk.exe --input data/customers.csv --out reports
+./bin/credit_risk --input data/customers.csv --out reports
 ```
 
-With an optional JSON summary:
+Optional JSON summary:
 
 ```bash
-./credit_risk.exe --input data/customers.csv --out reports --summary summary.json
+./bin/credit_risk --input data/customers.csv --out reports --summary summary.json
 ```
 
 ## Options
 
-| Option | Description | Default |
-|---|---|---|
-| `--input <path>` | Input customer CSV file | `data/customers.csv` |
-| `--out <dir>` | Output directory for reports | `reports` |
-| `--summary <file>` | Optional JSON summary output | *(none)* |
-| `--help` | Show help | |
-
-## Input Format
-
-```
-id,name,annual_income,total_debt,credit_limit,credit_used,late_payments
-C001,James Murphy,72000,18000,30000,7500,0
-C002,Sarah O'Brien,48000,22000,18000,14500,3
-```
-
-## Scoring Model
-
-Each feature is normalized to [0, 1]:
-
-- Debt-to-income = `total_debt / annual_income`
-- Credit utilization = `credit_used / credit_limit`
-- Late-payment rate = `late_payments / 12`
-
-The weighted sum is passed through a saturating transform:
-
-```
-risk = 1 - exp(-1.5 * weighted)
-```
-
-| Score | Category |
+| Flag | Description |
 |---|---|
-| < 0.33 | LOW |
-| < 0.66 | MEDIUM |
-| ≥ 0.66 | HIGH |
+| `--input <path>` | Input CSV file (default: `data/customers.csv`) |
+| `--out <dir>` | Output directory for per-customer reports (default: `reports`) |
+| `--summary <file>` | Optional path to write a JSON summary |
+| `--help` | Show usage |
 
 ## Output
 
-One text report per customer is written to the output directory
-(e.g. `reports/C001.txt`), including financial info, normalized features,
-and the final risk score and category.
+- A `.txt` report per customer in the output directory
+- A summary printed to the console (counts by category, average risk score)
+- An optional `summary.json` with aggregate stats and per-customer results
+
+## Clean
+
+```bash
+make clean
 ```
